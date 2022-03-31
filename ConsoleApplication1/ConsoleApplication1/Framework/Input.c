@@ -6,6 +6,7 @@ static bool s_prevKeyStates[256] = { false };
 
 bool isKeyDown(int keyCode)
 {
+	//GetAsyncKeyState 현재 키의 상태를 할아오는 함수
 	if (0x8000 & GetAsyncKeyState(keyCode))
 	{
 		return true;
@@ -18,6 +19,7 @@ bool isKeyDown(int keyCode)
 
 void UpdateInput()
 {
+	//메모리 복사
 	memcpy(s_prevKeyStates, s_currentKeyStates, sizeof(s_prevKeyStates));
 
 	for (int keyCode = 0; keyCode < 255; ++keyCode)
@@ -44,6 +46,7 @@ void UpdateInput()
 
 }
 
+//버튼을 누를때 한번 true가 발생.
 bool GetButtonDown(EKeyCode keyCode)
 {
 	if (false == s_prevKeyStates[keyCode] && s_currentKeyStates[keyCode])
@@ -56,6 +59,7 @@ bool GetButtonDown(EKeyCode keyCode)
 	}
 }
 
+//버튼을 눌렀다가 땠을 경우 True가 발생.
 bool GetButtonUp(EKeyCode keyCode)
 {
 	if (s_prevKeyStates[keyCode] && false == s_currentKeyStates[keyCode])
@@ -67,6 +71,8 @@ bool GetButtonUp(EKeyCode keyCode)
 		return false;
 	}
 }
+
+//버튼을 누르고 있을때 계속해서 True가 발생.
 bool GetButton(EKeyCode keyCode)
 {
 	if (s_prevKeyStates[keyCode] && s_currentKeyStates[keyCode])

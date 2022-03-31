@@ -18,9 +18,12 @@ void clear()
 
 bool InitializeRenderer()
 {
-	s_consoleHandle = GetStdHandle
-	(STD_OUTPUT_HANDLE);
+	//콘솔 프로세스는 핸들을 사용하여 콘솔의 입력 및 화면 버퍼에 엑세스한다.
+	// GetStdHandle 함수는 프로세스와 관련된 표준 입출력 및 오류 핸들의 검색 등의 기능을 제공한다.
+	s_consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
+	// 윈도우즈 핸들은 INVALID_HANDLE_VALUE값으로 유효값을 판단한다.
+	// 일반적으로 NULL값을 통해 값의 유효를 판단하는 것처럼...
 	if (INVALID_HANDLE_VALUE == s_consoleHandle)
 	{
 		return false;
@@ -46,7 +49,7 @@ void RenderMap()
 	clear();
 }
 
-void SetKeyMessage(int keyCode)
+void SetKeyMessage(int32_t keyCode)
 {
 	sprintf_s(s_map[0], sizeof(s_map[0]), "%c키가 눌림", keyCode);
 }

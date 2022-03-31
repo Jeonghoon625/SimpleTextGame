@@ -46,7 +46,8 @@ void render()
 }
 int32_t Run()
 {
-	// Game Loop => 플레이어로부터의 입력을 하드웨어와 분리시킨다.
+	// Game Loop => 플레이어로부터의 입력을 하드웨어와 분리, 
+	// 이러한 입력처리와 업데이트, 렌더링을 프레임 단위로 실행한다. 
 	// https://www.gameprogrammingpatterns.com/game-loop.html
 
 	while (true)
