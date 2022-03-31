@@ -151,12 +151,15 @@
     <ClCompile Include="stafx.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Stage\Stage.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\Game.h" />
     <ClInclude Include="Framework\Input.h" />
     <ClInclude Include="Framework\Renderer.h" />
     <ClInclude Include="Framework\Timer.h" />
+    <ClInclude Include="Macro.h" />
+    <ClInclude Include="Stage\Stage.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
