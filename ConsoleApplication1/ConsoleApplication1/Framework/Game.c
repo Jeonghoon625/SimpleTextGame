@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Input.h"
 #include "Timer.h"
+#include "Game/Stage.h"
 
 bool Initialize()
 {
@@ -12,6 +13,8 @@ bool Initialize()
 	}
 
 	InitializeTimer();
+
+	LoadStage(STAGE_01);
 
 	return true;
 }
@@ -40,6 +43,7 @@ void update()
 	//}
 	//
 	//store_deltaTime += GetDeltaTime();
+	UpdateStage();
 }	
 
 void render()
