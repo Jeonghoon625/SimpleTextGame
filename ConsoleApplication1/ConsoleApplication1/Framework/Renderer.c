@@ -39,7 +39,7 @@ void RenderMap()
 
 	SetConsoleCursorPosition(s_consoleHandle, initialPos);
 	SetConsoleCursorInfo(s_consoleHandle, &info);
-
+	
 	for (int i = 0; i < MAP_SIZE; ++i)
 	{
 		puts(s_map[i]);
@@ -49,7 +49,7 @@ void RenderMap()
 	clear();
 }
 
-void SetKeyMessage(int32_t keyCode)
+void SetMessage(const char* message)
 {
-	sprintf_s(s_map[0], sizeof(s_map[0]), "%c키가 눌림", keyCode);
+	strcpy_s(s_map[0], MAP_SIZE, message);
 }
