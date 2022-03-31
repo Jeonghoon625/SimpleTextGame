@@ -1,27 +1,23 @@
 #include "stdafx.h"
 #include "Stage.h"
-
+#include "Framework/Input.h"
 static char s_map[MAP_SIZE][MAP_SIZE];
 static int32_t s_goalCount = 0; // 목표 개수
 static int32_t s_boxOnGoalCount = 0; // 현재 맞는 개수
 static int32_t s_playerX = 0;
 static int32_t s_playerY = 0;
-char parseMapType(int i, int j, char mapType)
+
+char parseMapType(size_t i, size_t j, char mapType)
 {
 	switch (mapType)
 	{
-		//각 맵 타입별로 해줘야 하는 일들
+	case '\n':
+		return false;
+	
+	default :
+		s_map[i][j] = mapType;
+		return true;
 	}
-
-	//반환은 행에 다다랐을 때
-
-	/*if (ch == '\n')
-	{
-		break;
-	}
-
-
-	s_map[i][j] = ch;*/
 }
 
 void clearStage()
@@ -76,7 +72,8 @@ void UpdateStage()
 	//입력에 대해서 처리를 함
 	//게임이 클리어 됐는지도 파악해야함
 }
+
 const char** GetMap()
 {
-	return s_map;
+	return (char**) s_map;
 }
