@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Input.h"
 #include "Timer.h"
+#include "Game/Stage.h"
 
 bool Initialize()
 {
@@ -12,6 +13,8 @@ bool Initialize()
 	}
 
 	InitializeTimer();
+
+	LoadStage(STAGE_01);
 
 	return true;
 }
@@ -23,23 +26,7 @@ void processInput()
 
 void update()
 {
-	//// 0.5ÃÊ °£°ÝÀ¸·Î Æ¯Á¤ ¸Þ¼¼Áö¸¦ ±ôºýÀÌ±â.
-	//static float store_deltaTime = 0.0;
-	//
-	//float flikerTime = 0.5;
-
-	//if (store_deltaTime >= flikerTime)
-	//{
-	//	SetMessage("Å·°«¿¥ÆÛ·¯");
-	//	
-	//}
-	//
-	//if (store_deltaTime >= flikerTime * 2)
-	//{
-	//	store_deltaTime = 0.0;
-	//}
-	//
-	//store_deltaTime += GetDeltaTime();
+	UpdateStage();
 }	
 
 void render()
