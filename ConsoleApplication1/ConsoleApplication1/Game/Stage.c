@@ -7,6 +7,38 @@ static int32_t s_boxOnGoalCount = 0; // 현재 맞는 개수
 static int32_t s_playerX = 0;
 static int32_t s_playerY = 0;
 
+void canMove(int32_t posX, int32_t posY)
+{
+
+}
+
+void move()
+{
+	if (GetButtonDown(KEYCODE_W))
+	{
+		s_map[s_playerX][s_playerY] = ' ';
+		s_map[--s_playerX][s_playerY] = 'P';
+	}
+
+	else if (GetButtonDown(KEYCODE_A))
+	{
+		s_map[s_playerX][s_playerY] = ' ';
+		s_map[s_playerX][--s_playerY] = 'P';
+	}
+
+	else if (GetButtonDown(KEYCODE_S))
+	{
+		s_map[s_playerX][s_playerY] = ' ';
+		s_map[++s_playerX][s_playerY] = 'P';
+	}
+
+	else if (GetButtonDown(KEYCODE_D))
+	{
+		s_map[s_playerX][s_playerY] = ' ';
+		s_map[s_playerX][++s_playerY] = 'P';
+	}
+}
+
 char parseMapType(size_t i, size_t j, char mapType)
 {
 	switch (mapType)
@@ -14,6 +46,17 @@ char parseMapType(size_t i, size_t j, char mapType)
 	case '\n':
 		return false;
 	
+	case 'P' :
+		s_playerX = i;
+		s_playerY = j;
+		s_map[i][j] = mapType;
+		return true;
+
+	case 'O' :
+		s_goalCount++;
+		s_map[i][j] = mapType;
+		return true;
+
 	default :
 		s_map[i][j] = mapType;
 		return true;
@@ -33,6 +76,7 @@ void clearStage()
 	s_playerX = 0;
 	s_playerY = 0;
 }
+
 void LoadStage(EStageLevel level)
 {
 	assert(STAGE_01 <= level && level < STAGE_MAX);
@@ -69,6 +113,8 @@ void LoadStage(EStageLevel level)
 
 void UpdateStage()
 {
+	move();
+
 	//입력에 대해서 처리를 함
 	//게임이 클리어 됐는지도 파악해야함
 }
