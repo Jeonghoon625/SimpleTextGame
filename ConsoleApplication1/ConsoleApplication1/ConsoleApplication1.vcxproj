@@ -162,6 +162,11 @@
     <ClInclude Include="Macro.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Stage\Stage01.txt" />
+    <Text Include="Stage\Stage02.txt" />
+    <Text Include="Stage\Stage03.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

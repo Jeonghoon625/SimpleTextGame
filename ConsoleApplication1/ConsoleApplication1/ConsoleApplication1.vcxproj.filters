@@ -61,4 +61,15 @@
       <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Stage\Stage01.txt">
+      <Filter>Game</Filter>
+    </Text>
+    <Text Include="Stage\Stage02.txt">
+      <Filter>Game</Filter>
+    </Text>
+    <Text Include="Stage\Stage03.txt">
+      <Filter>Game</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

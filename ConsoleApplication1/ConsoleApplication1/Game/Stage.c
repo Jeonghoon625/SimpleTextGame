@@ -1,41 +1,287 @@
 #include "stdafx.h"
 #include "Stage.h"
 #include "Framework/Input.h"
+
+static int stageNum = 1;
 static char s_map[MAP_SIZE][MAP_SIZE];
 static int32_t s_goalCount = 0; // 목표 개수
 static int32_t s_boxOnGoalCount = 0; // 현재 맞는 개수
 static int32_t s_playerX = 0;
 static int32_t s_playerY = 0;
-
-void canMove(int32_t posX, int32_t posY)
+typedef struct
 {
+	int32_t s_boxX;
+	int32_t s_boxY;
+} Box;
+static Box box;
+typedef struct
+{
+	int32_t s_goalX;
+	int32_t s_goalY;
+} Goal;
+static Goal goal[Max_goalCount];
 
+bool GoalPos(int posX, int posY)
+{
+	for (int i = 0; i < s_goalCount; i++)
+	{
+		if(posX == goal[i].s_goalX && posY == goal[i].s_goalY)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
-void move()
+bool canBoxMove(Box box, EKeyCode keyCode)
 {
+	int32_t s_NextboxX = box.s_boxX;
+	int32_t s_NextboxY = box.s_boxY;
+
+	if (keyCode == 'W')
+	{
+		s_NextboxX--;
+	}
+
+	else if (keyCode == 'A')
+	{
+		s_NextboxY--;
+	}
+
+	else if (keyCode == 'S')
+	{
+		s_NextboxX++;
+	}
+
+	else if (keyCode == 'D')
+	{
+		s_NextboxY++;
+	}
+
+	switch (s_map[s_NextboxX][s_NextboxY])
+	{
+	case '#':
+		return false;
+
+	case 'a':
+		return false;
+
+	case '@':
+		return false;
+
+	default:
+		return true;
+	}
+}
+bool BoxOnGoal(int posX, int posY)
+{
+	if (s_map[posX][posY] == 'O')
+	{
+		s_boxOnGoalCount += 1;
+		return true;
+	}
+
+	return false;
+}
+
+void BoxMove(Box box, EKeyCode keyCode)
+{
+	int32_t s_NextboxX = box.s_boxX;
+	int32_t s_NextboxY = box.s_boxY;
+
+	if (keyCode == 'W')
+	{
+		s_NextboxX--;
+	}
+
+	else if (keyCode == 'A')
+	{
+		s_NextboxY--;
+	}
+
+	else if (keyCode == 'S')
+	{
+		s_NextboxX++;
+	}
+
+	else if (keyCode == 'D')
+	{
+		s_NextboxY++;
+	}
+
+	if (keyCode == 'W')
+	{
+		if (BoxOnGoal(s_NextboxX, s_NextboxY))
+		{
+			s_map[s_NextboxX][s_NextboxY] = '@';
+		}
+
+		else
+		{
+			s_map[s_NextboxX][s_NextboxY] = 'a';
+		}
+	}
+
+	else if (keyCode == 'A')
+	{
+		if (BoxOnGoal(s_NextboxX, s_NextboxY))
+		{
+			s_map[s_NextboxX][s_NextboxY] = '@';
+		}
+
+		else
+		{
+			s_map[s_NextboxX][s_NextboxY] = 'a';
+		}
+	}
+
+	else if (keyCode == 'S')
+	{
+		if (BoxOnGoal(s_NextboxX, s_NextboxY))
+		{
+			s_map[s_NextboxX][s_NextboxY] = '@';
+		}
+
+		else
+		{
+			s_map[s_NextboxX][s_NextboxY] = 'a';
+		}
+	}
+
+	else if (keyCode == 'D')
+	{
+		if (BoxOnGoal(s_NextboxX, s_NextboxY))
+		{
+			s_map[s_NextboxX][s_NextboxY] = '@';
+		}
+
+		else
+		{
+			s_map[s_NextboxX][s_NextboxY] = 'a';
+		}
+	}
+}
+
+bool canPlayerMove(int32_t posX, int32_t posY, EKeyCode keyCode)
+{
+	switch (s_map[posX][posY])
+	{
+	case '#':
+		return false;
+
+	case 'a':
+		box.s_boxX = posX;
+		box.s_boxY = posY;
+
+		if (canBoxMove(box, keyCode))
+		{
+			BoxMove(box, keyCode);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	case '@':
+		box.s_boxX = posX;
+		box.s_boxY = posY;
+
+		if (canBoxMove(box, keyCode))
+		{
+			BoxMove(box, keyCode);
+			s_boxOnGoalCount--;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	default:
+		return true;
+	}
+}
+
+void PlayerMove()
+{
+	int32_t s_NextPlayerX = s_playerX;
+	int32_t s_NextPlayerY = s_playerY;
+
 	if (GetButtonDown(KEYCODE_W))
 	{
-		s_map[s_playerX][s_playerY] = ' ';
-		s_map[--s_playerX][s_playerY] = 'P';
+		s_NextPlayerX--;
+		if (canPlayerMove(s_playerX - 1, s_playerY, KEYCODE_W))
+		{
+			if (GoalPos(s_playerX, s_playerY))
+			{
+				s_map[s_playerX][s_playerY] = 'O';
+			}
+			else
+			{
+				s_map[s_playerX][s_playerY] = ' ';
+			}
+
+			s_map[--s_playerX][s_playerY] = 'P';
+		}
 	}
 
 	else if (GetButtonDown(KEYCODE_A))
 	{
-		s_map[s_playerX][s_playerY] = ' ';
-		s_map[s_playerX][--s_playerY] = 'P';
+		s_NextPlayerY--;
+		if (canPlayerMove(s_playerX, s_playerY - 1, KEYCODE_A))
+		{
+			if (GoalPos(s_playerX, s_playerY))
+			{
+				s_map[s_playerX][s_playerY] = 'O';
+			}
+			else
+			{
+				s_map[s_playerX][s_playerY] = ' ';
+			}
+			s_map[s_playerX][--s_playerY] = 'P';
+		}
+
 	}
 
 	else if (GetButtonDown(KEYCODE_S))
 	{
-		s_map[s_playerX][s_playerY] = ' ';
-		s_map[++s_playerX][s_playerY] = 'P';
+		s_NextPlayerX++;
+		if (canPlayerMove(s_playerX + 1, s_playerY, KEYCODE_S))
+		{
+			if (GoalPos(s_playerX, s_playerY))
+			{
+				s_map[s_playerX][s_playerY] = 'O';
+			}
+			else
+			{
+				s_map[s_playerX][s_playerY] = ' ';
+			}
+			s_map[++s_playerX][s_playerY] = 'P';
+		}
 	}
 
 	else if (GetButtonDown(KEYCODE_D))
 	{
-		s_map[s_playerX][s_playerY] = ' ';
-		s_map[s_playerX][++s_playerY] = 'P';
+		s_NextPlayerY++;
+		if (canPlayerMove(s_playerX, s_playerY + 1, KEYCODE_D))
+		{
+			if (GoalPos(s_playerX, s_playerY))
+			{
+				s_map[s_playerX][s_playerY] = 'O';
+			}
+			else
+			{
+				s_map[s_playerX][s_playerY] = ' ';
+			}
+			s_map[s_playerX][++s_playerY] = 'P';
+		}
+	}
+
+	else if (GetButtonDown(KEYCODE_R))
+	{
+		LoadStage(STAGE_01);
 	}
 }
 
@@ -45,19 +291,22 @@ char parseMapType(size_t i, size_t j, char mapType)
 	{
 	case '\n':
 		return false;
-	
-	case 'P' :
+
+	case 'P':
 		s_playerX = i;
 		s_playerY = j;
 		s_map[i][j] = mapType;
 		return true;
 
-	case 'O' :
+	case 'O':
+		goal[s_goalCount].s_goalX = i;
+		goal[s_goalCount].s_goalY = j;
+
 		s_goalCount++;
 		s_map[i][j] = mapType;
 		return true;
 
-	default :
+	default:
 		s_map[i][j] = mapType;
 		return true;
 	}
@@ -80,23 +329,23 @@ void clearStage()
 void LoadStage(EStageLevel level)
 {
 	assert(STAGE_01 <= level && level < STAGE_MAX);
-	
+
 	static char path[MAX_PATH] = { 0 };
 
-	sprintf_s(path, sizeof(path), "Stage/Stage%02d.txt", (int32_t)level);
+	sprintf_s(path, sizeof(path), "Stage/Stage%02d.txt", stageNum);
 	FILE* fp = NULL;
 	fopen_s(&fp, path, "r");
 	assert(fp != NULL);
 
 	clearStage();
 
-	for (size_t i = 0; i < MAP_SIZE; ++i)
+	for (size_t i = 3; i < MAP_SIZE; ++i)
 	{
 		for (size_t j = 0; j < MAP_SIZE; ++j)
 		{
 			char ch = fgetc(fp);
 
-			if (false == parseMapType(i,j,ch))
+			if (false == parseMapType(i, j, ch))
 			{
 				break;
 			}
@@ -113,13 +362,28 @@ void LoadStage(EStageLevel level)
 
 void UpdateStage()
 {
-	move();
+	PlayerMove();
+	sprintf_s(s_map[0], sizeof(s_map[0]), "Stage %d", stageNum);
+	sprintf_s(s_map[1], sizeof(s_map[1]), "골인 개수 : %d", s_boxOnGoalCount);
+	if (s_boxOnGoalCount == s_goalCount)
+	{
+		stageNum++;
+		if (stageNum != 4)
+		{
+			LoadStage(STAGE_01);
+		}
 
-	//입력에 대해서 처리를 함
-	//게임이 클리어 됐는지도 파악해야함
+		if (stageNum == 4)
+		{
+			sprintf_s(s_map[0], sizeof(s_map[0]), "#####################");
+			sprintf_s(s_map[0], sizeof(s_map[1]), "# C   L   E   A   R #");
+			sprintf_s(s_map[0], sizeof(s_map[2]), "#####################");
+		}
+		
+	}
 }
 
 const char** GetMap()
 {
-	return (char**) s_map;
+	return (char**)s_map;
 }
