@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Stage.h"
+#include "Framework/Timer.h"
 #include "Framework/Input.h"
 
 static int stageNum = 1;
@@ -29,6 +30,17 @@ bool GoalPos(int posX, int posY)
 		{
 			return true;
 		}
+	}
+
+	return false;
+}
+
+bool BoxOnGoal(int posX, int posY)
+{
+	if (s_map[posX][posY] == 'O')
+	{
+		s_boxOnGoalCount += 1;
+		return true;
 	}
 
 	return false;
@@ -74,16 +86,6 @@ bool canBoxMove(Box box, EKeyCode keyCode)
 		return true;
 	}
 }
-bool BoxOnGoal(int posX, int posY)
-{
-	if (s_map[posX][posY] == 'O')
-	{
-		s_boxOnGoalCount += 1;
-		return true;
-	}
-
-	return false;
-}
 
 void BoxMove(Box box, EKeyCode keyCode)
 {
@@ -110,56 +112,13 @@ void BoxMove(Box box, EKeyCode keyCode)
 		s_NextboxY++;
 	}
 
-	if (keyCode == 'W')
+	if (BoxOnGoal(s_NextboxX, s_NextboxY))
 	{
-		if (BoxOnGoal(s_NextboxX, s_NextboxY))
-		{
-			s_map[s_NextboxX][s_NextboxY] = '@';
-		}
-
-		else
-		{
-			s_map[s_NextboxX][s_NextboxY] = 'a';
-		}
+		s_map[s_NextboxX][s_NextboxY] = '@';
 	}
-
-	else if (keyCode == 'A')
+	else
 	{
-		if (BoxOnGoal(s_NextboxX, s_NextboxY))
-		{
-			s_map[s_NextboxX][s_NextboxY] = '@';
-		}
-
-		else
-		{
-			s_map[s_NextboxX][s_NextboxY] = 'a';
-		}
-	}
-
-	else if (keyCode == 'S')
-	{
-		if (BoxOnGoal(s_NextboxX, s_NextboxY))
-		{
-			s_map[s_NextboxX][s_NextboxY] = '@';
-		}
-
-		else
-		{
-			s_map[s_NextboxX][s_NextboxY] = 'a';
-		}
-	}
-
-	else if (keyCode == 'D')
-	{
-		if (BoxOnGoal(s_NextboxX, s_NextboxY))
-		{
-			s_map[s_NextboxX][s_NextboxY] = '@';
-		}
-
-		else
-		{
-			s_map[s_NextboxX][s_NextboxY] = 'a';
-		}
+		s_map[s_NextboxX][s_NextboxY] = 'a';
 	}
 }
 
@@ -360,26 +319,37 @@ void LoadStage(EStageLevel level)
 	fclose(fp);
 }
 
-void UpdateStage()
+bool StageOver()
 {
-	PlayerMove();
-	sprintf_s(s_map[0], sizeof(s_map[0]), "Stage %d", stageNum);
-	sprintf_s(s_map[1], sizeof(s_map[1]), "골인 개수 : %d", s_boxOnGoalCount);
 	if (s_boxOnGoalCount == s_goalCount)
 	{
 		stageNum++;
-		if (stageNum != 4)
+		if (stageNum < 4)
 		{
 			LoadStage(STAGE_01);
+			return true;
 		}
 
-		if (stageNum == 4)
+		else
 		{
+			clearStage();
 			sprintf_s(s_map[0], sizeof(s_map[0]), "#####################");
-			sprintf_s(s_map[0], sizeof(s_map[1]), "# C   L   E   A   R #");
-			sprintf_s(s_map[0], sizeof(s_map[2]), "#####################");
+			sprintf_s(s_map[1], sizeof(s_map[1]), "# C   L   E   A   R #");
+			sprintf_s(s_map[2], sizeof(s_map[2]), "#####################");
+			return true;
 		}
-		
+	}
+
+	return false;
+}
+
+void UpdateStage()
+{
+	PlayerMove();
+	if (!StageOver())
+	{
+		sprintf_s(s_map[0], sizeof(s_map[0]), "> Stage %d", stageNum);
+		sprintf_s(s_map[1], sizeof(s_map[1]), "> 개수 : %d", s_boxOnGoalCount);
 	}
 }
 
@@ -387,3 +357,4 @@ const char** GetMap()
 {
 	return (char**)s_map;
 }
+

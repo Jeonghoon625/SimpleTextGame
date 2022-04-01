@@ -22,6 +22,11 @@ typedef enum StageLevel
 } EStageLevel;
 
 /// <summary>
+/// 타이틀을 로딩한다.
+/// </summary>
+void LoadTitle();
+
+/// <summary>
 /// 스테이지를 로딩한다.
 /// </summary>
 void LoadStage(EStageLevel level);

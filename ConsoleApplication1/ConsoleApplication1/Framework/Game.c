@@ -11,9 +11,9 @@ bool Initialize()
 	{
 		return false;
 	}
-
+	 
 	InitializeTimer();
-
+		
 	LoadStage(STAGE_01);
 
 	return true;
@@ -32,8 +32,8 @@ void update()
 void render()
 {
 	RenderMap();
-
 }
+
 int32_t Run()
 {
 	// Game Loop => 플레이어로부터의 입력을 하드웨어와 분리, 
