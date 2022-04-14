@@ -9,6 +9,9 @@ static int32_t s_goalCount = 0; // 목표 개수
 static int32_t s_boxOnGoalCount = 0; // 현재 맞는 개수
 static int32_t s_playerX = 0;
 static int32_t s_playerY = 0;
+static double runTime;
+static double timer;
+
 typedef struct
 {
 	int32_t s_boxX;
@@ -26,7 +29,7 @@ bool GoalPos(int posX, int posY)
 {
 	for (int i = 0; i < s_goalCount; i++)
 	{
-		if(posX == goal[i].s_goalX && posY == goal[i].s_goalY)
+		if (posX == goal[i].s_goalX && posY == goal[i].s_goalY)
 		{
 			return true;
 		}
@@ -39,7 +42,7 @@ bool BoxOnGoal(int posX, int posY)
 {
 	if (s_map[posX][posY] == 'O')
 	{
-		s_boxOnGoalCount += 1;
+		s_boxOnGoalCount++;
 		return true;
 	}
 
@@ -48,30 +51,30 @@ bool BoxOnGoal(int posX, int posY)
 
 bool canBoxMove(Box box, EKeyCode keyCode)
 {
-	int32_t s_NextboxX = box.s_boxX;
-	int32_t s_NextboxY = box.s_boxY;
+	int32_t s_nextBoxX = box.s_boxX;
+	int32_t s_nextBoxY = box.s_boxY;
 
 	if (keyCode == 'W')
 	{
-		s_NextboxX--;
+		s_nextBoxX--;
 	}
 
 	else if (keyCode == 'A')
 	{
-		s_NextboxY--;
+		s_nextBoxY--;
 	}
 
 	else if (keyCode == 'S')
 	{
-		s_NextboxX++;
+		s_nextBoxX++;
 	}
 
 	else if (keyCode == 'D')
 	{
-		s_NextboxY++;
+		s_nextBoxY++;
 	}
 
-	switch (s_map[s_NextboxX][s_NextboxY])
+	switch (s_map[s_nextBoxX][s_nextBoxY])
 	{
 	case '#':
 		return false;
@@ -165,40 +168,25 @@ bool canPlayerMove(int32_t posX, int32_t posY, EKeyCode keyCode)
 
 void PlayerMove()
 {
-	int32_t s_NextPlayerX = s_playerX;
-	int32_t s_NextPlayerY = s_playerY;
+	int32_t s_nextPlayerX = s_playerX;
+	int32_t s_nextPlayerY = s_playerY;
 
 	if (GetButtonDown(KEYCODE_W))
 	{
-		s_NextPlayerX--;
+		s_nextPlayerX--;
 		if (canPlayerMove(s_playerX - 1, s_playerY, KEYCODE_W))
 		{
-			if (GoalPos(s_playerX, s_playerY))
-			{
-				s_map[s_playerX][s_playerY] = 'O';
-			}
-			else
-			{
-				s_map[s_playerX][s_playerY] = ' ';
-			}
-
+			s_map[s_playerX][s_playerY] = GoalPos(s_playerX, s_playerY) ? 'O' : ' ';
 			s_map[--s_playerX][s_playerY] = 'P';
 		}
 	}
 
 	else if (GetButtonDown(KEYCODE_A))
 	{
-		s_NextPlayerY--;
+		s_nextPlayerY--;
 		if (canPlayerMove(s_playerX, s_playerY - 1, KEYCODE_A))
 		{
-			if (GoalPos(s_playerX, s_playerY))
-			{
-				s_map[s_playerX][s_playerY] = 'O';
-			}
-			else
-			{
-				s_map[s_playerX][s_playerY] = ' ';
-			}
+			s_map[s_playerX][s_playerY] = GoalPos(s_playerX, s_playerY) ? 'O' : ' ';
 			s_map[s_playerX][--s_playerY] = 'P';
 		}
 
@@ -206,34 +194,20 @@ void PlayerMove()
 
 	else if (GetButtonDown(KEYCODE_S))
 	{
-		s_NextPlayerX++;
+		s_nextPlayerX++;
 		if (canPlayerMove(s_playerX + 1, s_playerY, KEYCODE_S))
 		{
-			if (GoalPos(s_playerX, s_playerY))
-			{
-				s_map[s_playerX][s_playerY] = 'O';
-			}
-			else
-			{
-				s_map[s_playerX][s_playerY] = ' ';
-			}
+			s_map[s_playerX][s_playerY] = GoalPos(s_playerX, s_playerY) ? 'O' : ' ';
 			s_map[++s_playerX][s_playerY] = 'P';
 		}
 	}
 
 	else if (GetButtonDown(KEYCODE_D))
 	{
-		s_NextPlayerY++;
+		s_nextPlayerY++;
 		if (canPlayerMove(s_playerX, s_playerY + 1, KEYCODE_D))
 		{
-			if (GoalPos(s_playerX, s_playerY))
-			{
-				s_map[s_playerX][s_playerY] = 'O';
-			}
-			else
-			{
-				s_map[s_playerX][s_playerY] = ' ';
-			}
+			s_map[s_playerX][s_playerY] = GoalPos(s_playerX, s_playerY) ? 'O' : ' ';
 			s_map[s_playerX][++s_playerY] = 'P';
 		}
 	}
@@ -252,14 +226,14 @@ char parseMapType(size_t i, size_t j, char mapType)
 		return false;
 
 	case 'P':
-		s_playerX = i;
-		s_playerY = j;
+		s_playerX = (int)i;
+		s_playerY = (int)j;
 		s_map[i][j] = mapType;
 		return true;
 
 	case 'O':
-		goal[s_goalCount].s_goalX = i;
-		goal[s_goalCount].s_goalY = j;
+		goal[s_goalCount].s_goalX = (int)i;
+		goal[s_goalCount].s_goalY = (int)j;
 
 		s_goalCount++;
 		s_map[i][j] = mapType;
@@ -298,7 +272,7 @@ void LoadStage(EStageLevel level)
 
 	clearStage();
 
-	for (size_t i = 3; i < MAP_SIZE; ++i)
+	for (size_t i = 6; i < MAP_SIZE; ++i)
 	{
 		for (size_t j = 0; j < MAP_SIZE; ++j)
 		{
@@ -317,6 +291,10 @@ void LoadStage(EStageLevel level)
 	}
 
 	fclose(fp);
+
+	sprintf_s(s_map[0], sizeof(s_map[0]), "> Stage %d", stageNum);
+	sprintf_s(s_map[3], sizeof(s_map[3]), "[Move] : W A S D");
+	sprintf_s(s_map[4], sizeof(s_map[4]), "[RESET] : R");
 }
 
 bool StageOver()
@@ -348,8 +326,9 @@ void UpdateStage()
 	PlayerMove();
 	if (!StageOver())
 	{
-		sprintf_s(s_map[0], sizeof(s_map[0]), "> Stage %d", stageNum);
-		sprintf_s(s_map[1], sizeof(s_map[1]), "> 개수 : %d", s_boxOnGoalCount);
+		runTime += GetDeltaTime();
+		sprintf_s(s_map[1], sizeof(s_map[1]), "> Goal : %d", s_boxOnGoalCount);
+		sprintf_s(s_map[2], sizeof(s_map[2]), "> RunTime : %.0fs", runTime);
 	}
 }
 
@@ -358,3 +337,18 @@ const char** GetMap()
 	return (char**)s_map;
 }
 
+void Delaytime(float intervaltick)
+{
+	float delayTime = intervaltick + 0.5f;
+
+	if (timer >= intervaltick)
+	{
+	}
+
+	if (timer >= delayTime)
+	{
+		timer = 0.0f;
+	}
+
+	timer += GetDeltaTime();
+}
