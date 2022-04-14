@@ -5,6 +5,8 @@
 #include "Timer.h"
 #include "Game/Stage.h"
 
+extern bool gameOver;
+
 bool Initialize()
 {
 	if (false == InitializeRenderer())
@@ -40,7 +42,7 @@ int32_t Run()
 	// 이러한 입력처리와 업데이트, 렌더링을 프레임 단위로 실행한다. 
 	// https://www.gameprogrammingpatterns.com/game-loop.html
 
-	while (true)
+	while (!gameOver)
 	{
 		//프레임 시작 ----- 다음 프레임 시작
 		// Δ
@@ -52,4 +54,6 @@ int32_t Run()
 		// 렌더링
 		render();
 	}
+
+	return 0;
 }

@@ -3,14 +3,15 @@
 #include "Framework/Timer.h"
 #include "Framework/Input.h"
 
-static int stageNum = 1;
+static int stageNum = STAGE_01;
 static char s_map[MAP_SIZE][MAP_SIZE];
 static int32_t s_goalCount = 0; // 목표 개수
 static int32_t s_boxOnGoalCount = 0; // 현재 맞는 개수
 static int32_t s_playerX = 0;
 static int32_t s_playerY = 0;
-static double runTime;
-static double timer;
+static double s_runTime;
+
+bool gameOver = false;
 
 typedef struct
 {
@@ -214,7 +215,7 @@ void PlayerMove()
 
 	else if (GetButtonDown(KEYCODE_R))
 	{
-		LoadStage(STAGE_01);
+		LoadStage(stageNum);
 	}
 }
 
@@ -261,18 +262,18 @@ void clearStage()
 
 void LoadStage(EStageLevel level)
 {
-	assert(STAGE_01 <= level && level < STAGE_MAX);
+	assert(STAGE_01 <= level && level <= STAGE_MAX);
 
 	static char path[MAX_PATH] = { 0 };
 
-	sprintf_s(path, sizeof(path), "Stage/Stage%02d.txt", stageNum);
+	sprintf_s(path, sizeof(path), "Stage/Stage%02d.txt", level);
 	FILE* fp = NULL;
 	fopen_s(&fp, path, "r");
 	assert(fp != NULL);
 
 	clearStage();
 
-	for (size_t i = 6; i < MAP_SIZE; ++i)
+	for (size_t i = 7; i < MAP_SIZE; ++i)
 	{
 		for (size_t j = 0; j < MAP_SIZE; ++j)
 		{
@@ -292,19 +293,21 @@ void LoadStage(EStageLevel level)
 
 	fclose(fp);
 
-	sprintf_s(s_map[0], sizeof(s_map[0]), "> Stage %d", stageNum);
-	sprintf_s(s_map[3], sizeof(s_map[3]), "[Move] : W A S D");
-	sprintf_s(s_map[4], sizeof(s_map[4]), "[RESET] : R");
+	sprintf_s(s_map[0], sizeof(s_map[0]), "> Stage %d", level);
+	sprintf_s(s_map[4], sizeof(s_map[4]), "[Move] : W A S D");
+	sprintf_s(s_map[5], sizeof(s_map[5]), "[RESET] : R");
 }
 
 bool StageOver()
 {
+	static float timer = 0;
+
 	if (s_boxOnGoalCount == s_goalCount)
 	{
 		stageNum++;
-		if (stageNum < 4)
+		if (stageNum <= STAGE_MAX)
 		{
-			LoadStage(STAGE_01);
+			LoadStage(stageNum);
 			return true;
 		}
 
@@ -312,8 +315,12 @@ bool StageOver()
 		{
 			clearStage();
 			sprintf_s(s_map[0], sizeof(s_map[0]), "#####################");
-			sprintf_s(s_map[1], sizeof(s_map[1]), "# C   L   E   A   R #");
-			sprintf_s(s_map[2], sizeof(s_map[2]), "#####################");
+			sprintf_s(s_map[1], sizeof(s_map[1]), "#                   #");
+			sprintf_s(s_map[2], sizeof(s_map[2]), "# C   L   E   A   R #");
+			sprintf_s(s_map[3], sizeof(s_map[3]), "#                   #");
+			sprintf_s(s_map[4], sizeof(s_map[4]), "#####################");
+			sprintf_s(s_map[6], sizeof(s_map[6]), "Clear Time : %.01fs", s_runTime);
+			gameOver = true;
 			return true;
 		}
 	}
@@ -326,29 +333,14 @@ void UpdateStage()
 	PlayerMove();
 	if (!StageOver())
 	{
-		runTime += GetDeltaTime();
-		sprintf_s(s_map[1], sizeof(s_map[1]), "> Goal : %d", s_boxOnGoalCount);
-		sprintf_s(s_map[2], sizeof(s_map[2]), "> RunTime : %.0fs", runTime);
+		s_runTime += GetDeltaTime();
+		sprintf_s(s_map[1], sizeof(s_map[1]), "> Goal : %d", s_goalCount);
+		sprintf_s(s_map[2], sizeof(s_map[2]), "> BoxOnGoal : %d", s_boxOnGoalCount);
+		sprintf_s(s_map[3], sizeof(s_map[3]), "> RunTime : %.01fs", s_runTime);
 	}
 }
 
 const char** GetMap()
 {
 	return (char**)s_map;
-}
-
-void Delaytime(float intervaltick)
-{
-	float delayTime = intervaltick + 0.5f;
-
-	if (timer >= intervaltick)
-	{
-	}
-
-	if (timer >= delayTime)
-	{
-		timer = 0.0f;
-	}
-
-	timer += GetDeltaTime();
 }

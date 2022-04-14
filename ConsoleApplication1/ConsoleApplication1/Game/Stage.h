@@ -18,7 +18,7 @@ typedef enum MapType
 typedef enum StageLevel
 {
 	STAGE_01 = 1,
-	STAGE_MAX
+	STAGE_MAX = 3
 } EStageLevel;
 
 /// <summary>
